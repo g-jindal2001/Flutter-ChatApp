@@ -18,23 +18,19 @@ class _NewMessageState extends State<NewMessage> {
   void _sendMessage() async {
     FocusScope.of(context).unfocus();
     final user = FirebaseAuth.instance.currentUser;
-    //final userData = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final creatorData = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
     print(user.uid);
     print(widget.listenerId);
-
-    List<String> participantsList = [];
-    participantsList.addAll([user.uid, widget.listenerId]);
 
     try {
       FirebaseFirestore.instance.collection('chat').add({
         'text': _enteredMessage,
         'createdAt': Timestamp.now(),
-        'participants': FieldValue.arrayUnion(participantsList),
+        'uniqueId': user.uid + widget.listenerId,
         'creatorId': user.uid,
-        //'username': userData['username'],
-        //'userImage': userData['image_url'],
-        'listenerId': widget.listenerId,
+        'creatorName': creatorData['username'],
+        'creatorImage': creatorData['image_url'],
       });
     } catch (error) {
       print(error);

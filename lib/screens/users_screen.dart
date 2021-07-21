@@ -59,7 +59,6 @@ class UsersScreen extends StatelessWidget {
           }
 
           final users = userSnapshot.data.docs;
-          //final user = FirebaseAuth.instance.currentUser;
 
           return ListView.builder(
             itemBuilder: (ctx, index) => ListTile(
@@ -75,20 +74,12 @@ class UsersScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.grey[400]),
               ),
               onTap: () {
-                //final listenerData = await FirebaseFirestore.instance.collection('users').doc(users[index].id).get();
-                //final creatorData = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-
                 Navigator.of(context).pushNamed(
                   ChatScreen.routeName,
                   arguments: {
-                    //'creatorId': user.uid,
-                    //'creatorImage': creatorData['image_url'],
-                    //'creatorUsername': creatorData['username'],
                     'listenerId': users[index].id,
-                    //'listenerImage': listenerData['image_url'],
-                    //'listenerUsername': listenerData['username']
                   },
-                ); 
+                );
               },
             ),
             itemCount: users.length,

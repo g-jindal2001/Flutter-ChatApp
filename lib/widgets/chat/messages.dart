@@ -13,9 +13,12 @@ class Messages extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     return StreamBuilder(
       //StreamBuilder continously emits a stream of data from a source and whenver the source data changes, the streamSnapshot modifies itself accordingly
-      stream: FirebaseFirestore.instance
-          .collection('chat').where('participants', arrayContainsAny: [user.uid, listenerId])
-          .orderBy('createdAt', descending: true)
+      stream: FirebaseFirestore.instance.collection('chat').where('uniqueId',
+              whereIn: [
+            user.uid + listenerId,
+            listenerId + user.uid
+          ]) //whereIn in flutter is same as 'in' condition in Firebase
+          //.orderBy('createdAt', descending: false)
           .snapshots(),
       builder: (ctx, chatSnapshot) {
         if (chatSnapshot.connectionState == ConnectionState.waiting) {
@@ -28,10 +31,11 @@ class Messages extends StatelessWidget {
           itemCount: chatDocs.length,
           itemBuilder: (ctx, index) => MessageBubble(
             chatDocs[index]['text'],
-            chatDocs[index]['userId'] == user.uid,
-            chatDocs[index]['username'],
-            chatDocs[index]['userImage'],
-            key: ValueKey(chatDocs[index].id),// Assigning a unique key to each message(not compulsory) to optimize performance
+            chatDocs[index]['creatorId'] == user.uid,
+            chatDocs[index]['creatorName'],
+            chatDocs[index]['creatorImage'],
+            key: ValueKey(chatDocs[index]
+                .id), // Assigning a unique key to each message(not compulsory) to optimize performance
           ),
         );
       },
