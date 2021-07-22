@@ -26,13 +26,27 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final data = ModalRoute.of(context).settings.arguments as Map<String, dynamic> ;
+    final data =
+        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
     final listenerId = data['listenerId'];
+    final username = data['username'];
+    final imageUrl = data['image_url'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Chat'),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(imageUrl),
+            ),
+            Container(
+              child: Text(username),
+              margin: EdgeInsets.only(left: 10),
+            ),
+          ],
+        ),
       ),
+      backgroundColor: const Color(0xffF0F0F0),
       body: Container(
         child: Column(
           children: [

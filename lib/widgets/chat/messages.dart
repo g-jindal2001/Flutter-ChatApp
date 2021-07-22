@@ -13,11 +13,12 @@ class Messages extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     return StreamBuilder(
       //StreamBuilder continously emits a stream of data from a source and whenver the source data changes, the streamSnapshot modifies itself accordingly
-      stream: FirebaseFirestore.instance.collection('chat').where('uniqueId',
-              whereIn: [
-            user.uid + listenerId,
-            listenerId + user.uid
-          ]) //whereIn in flutter is same as 'in' condition in Firebase
+      stream: FirebaseFirestore.instance
+          .collection('chat')
+          .where('uniqueId', whereIn: [
+        user.uid + listenerId,
+        listenerId + user.uid,
+      ]) //whereIn in flutter is same as 'in' condition in Firebase
           //.orderBy('createdAt', descending: false)
           .snapshots(),
       builder: (ctx, chatSnapshot) {
@@ -26,17 +27,31 @@ class Messages extends StatelessWidget {
         }
 
         final chatDocs = chatSnapshot.data.docs;
+
         return ListView.builder(
           reverse: true,
           itemCount: chatDocs.length,
-          itemBuilder: (ctx, index) => MessageBubble(
-            chatDocs[index]['text'],
-            chatDocs[index]['creatorId'] == user.uid,
-            chatDocs[index]['creatorName'],
-            chatDocs[index]['creatorImage'],
-            key: ValueKey(chatDocs[index]
-                .id), // Assigning a unique key to each message(not compulsory) to optimize performance
-          ),
+          itemBuilder: (ctx, index) {
+            try {
+              return MessageBubble(
+                chatDocs[index]['text'],
+                chatDocs[index]['creatorId'] == user.uid,
+                chatDocs[index]['creatorName'],
+                chatDocs[index]['creatorImage'],
+                key: ValueKey(chatDocs[index]
+                    .id), // Assigning a unique key to each message(not compulsory) to optimize performance
+              );
+            } catch (error) {
+              return MessageBubble(
+                chatDocs[index]['image'],
+                chatDocs[index]['creatorId'] == user.uid,
+                chatDocs[index]['creatorName'],
+                chatDocs[index]['creatorImage'],
+                key: ValueKey(chatDocs[index]
+                    .id), // Assigning a unique key to each message(not compulsory) to optimize performance
+              );
+            }
+          },
         );
       },
     );

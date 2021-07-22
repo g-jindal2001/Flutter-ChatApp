@@ -11,34 +11,36 @@ class UsersScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Flutter Chat'),
         actions: [
-          DropdownButton(
-            icon: Icon(
-              Icons.more_vert,
-              color: Theme.of(context).primaryIconTheme.color,
-            ),
-            items: [
-              DropdownMenuItem(
-                child: Container(
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.exit_to_app,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      SizedBox(width: 8),
-                      Text('Logout'),
-                    ],
-                  ),
-                ),
-                value: 'logout',
+          DropdownButtonHideUnderline(
+            child: DropdownButton(
+              icon: Icon(
+                Icons.more_vert,
+                color: Theme.of(context).primaryIconTheme.color,
               ),
-            ],
-            onChanged: (itemIdentifier) {
-              if (itemIdentifier == 'logout') {
-                FirebaseAuth.instance
-                    .signOut(); //Firebase handles all signout operations including the token associated with it
-              }
-            },
+              items: [
+                DropdownMenuItem(
+                  child: Container(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.exit_to_app,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        SizedBox(width: 8),
+                        Text('Logout'),
+                      ],
+                    ),
+                  ),
+                  value: 'logout',
+                ),
+              ],
+              onChanged: (itemIdentifier) {
+                if (itemIdentifier == 'logout') {
+                  FirebaseAuth.instance
+                      .signOut(); //Firebase handles all signout operations including the token associated with it
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -78,6 +80,8 @@ class UsersScreen extends StatelessWidget {
                   ChatScreen.routeName,
                   arguments: {
                     'listenerId': users[index].id,
+                    'username': users[index]['username'],
+                    'image_url': users[index]['image_url'],
                   },
                 );
               },

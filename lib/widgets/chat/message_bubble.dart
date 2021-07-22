@@ -49,15 +49,25 @@ class MessageBubble extends StatelessWidget {
                           : Theme.of(context).accentTextTheme.headline1.color,
                     ),
                   ),
-                  Text(
-                    message,
-                    style: TextStyle(
-                      color: isMe
-                          ? Colors.black
-                          : Theme.of(context).accentTextTheme.headline1.color,
+                  if (message.startsWith('https'))
+                    Container(
+                      child: Image.network(
+                        message,
+                        height: 150,
+                        width: 150,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    textAlign: isMe ? TextAlign.end : TextAlign.start,
-                  ),
+                  if (!message.startsWith('https'))
+                    Text(
+                      message,
+                      style: TextStyle(
+                        color: isMe
+                            ? Colors.black
+                            : Theme.of(context).accentTextTheme.headline1.color,
+                      ),
+                      textAlign: isMe ? TextAlign.end : TextAlign.start,
+                    ),
                 ],
               ),
             ),
