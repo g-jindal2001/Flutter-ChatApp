@@ -67,6 +67,8 @@ class _NewMessageState extends State<NewMessage> {
   }
 
   void _getFile(File file, String typeOfFile, String name) async {
+    Navigator.of(context).pop();
+    FocusScope.of(context).unfocus();
     if (file != null) {
       final ref = FirebaseStorage.instance
           .ref()
@@ -85,6 +87,7 @@ class _NewMessageState extends State<NewMessage> {
 
   void _showModalBottomSheet(BuildContext ctx) {
     showModalBottomSheet(
+      useRootNavigator: true,
       context: ctx,
       backgroundColor: Colors.transparent,
       builder: (_) {

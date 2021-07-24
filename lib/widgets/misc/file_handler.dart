@@ -16,7 +16,7 @@ class FileHandler extends StatefulWidget {
 
 class _FileHandlerState extends State<FileHandler> {
   Future<String> get _localDevicePath async {
-    final _devicePath = await getApplicationDocumentsDirectory();
+    final _devicePath = await getApplicationDocumentsDirectory();//accessed through path_provider
     return _devicePath.path;
   }
 
