@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../misc/file_handler.dart';
+
 class MessageBubble extends StatelessWidget {
   final String message;
+  final String name;
+  final String type;
   final bool isMe;
   final String creatorName;
   final String creatorImage;
   final Key key;
 
-  MessageBubble(this.message, this.isMe, this.creatorName, this.creatorImage,
+  MessageBubble(this.message, this.name, this.type, this.isMe, this.creatorName,
+      this.creatorImage,
       {this.key});
   @override
   Widget build(BuildContext context) {
@@ -49,16 +54,32 @@ class MessageBubble extends StatelessWidget {
                           : Theme.of(context).accentTextTheme.headline1.color,
                     ),
                   ),
-                  if (message.startsWith('https'))
-                    Container(
-                      child: Image.network(
-                        message,
-                        height: 150,
-                        width: 150,
-                        fit: BoxFit.cover,
+                  if (message.startsWith(
+                      'https://firebasestorage.googleapis.com/v0/b/flutter-chat-7e9d3.appspot.com/o/'))
+                    if (message.contains('chat_images'))
+                      Container(
+                        child: Image.network(
+                          message,
+                          height: 150,
+                          width: 150,
+                          fit: BoxFit.cover,
+                          frameBuilder: (BuildContext context, Widget child,
+                              int frame, bool wasSynchronouslyLoaded) {
+                            if (wasSynchronouslyLoaded) {
+                              return child;
+                            }
+                            return AnimatedOpacity(
+                              child: child,
+                              opacity: frame == null ? 0 : 1,
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.easeOut,
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  if (!message.startsWith('https'))
+                  if (message.contains('chat_docs')) FileHandler(name, message),
+                  if (!message.startsWith(
+                      'https://firebasestorage.googleapis.com/v0/b/flutter-chat-7e9d3.appspot.com/o/'))
                     Text(
                       message,
                       style: TextStyle(

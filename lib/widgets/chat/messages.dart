@@ -35,6 +35,8 @@ class Messages extends StatelessWidget {
             try {
               return MessageBubble(
                 chatDocs[index]['text'],
+                'none',
+                'text',
                 chatDocs[index]['creatorId'] == user.uid,
                 chatDocs[index]['creatorName'],
                 chatDocs[index]['creatorImage'],
@@ -42,14 +44,29 @@ class Messages extends StatelessWidget {
                     .id), // Assigning a unique key to each message(not compulsory) to optimize performance
               );
             } catch (error) {
-              return MessageBubble(
-                chatDocs[index]['image'],
-                chatDocs[index]['creatorId'] == user.uid,
-                chatDocs[index]['creatorName'],
-                chatDocs[index]['creatorImage'],
-                key: ValueKey(chatDocs[index]
-                    .id), // Assigning a unique key to each message(not compulsory) to optimize performance
-              );
+              try {
+                return MessageBubble(
+                  chatDocs[index]['image'],
+                  'none',
+                  'image',
+                  chatDocs[index]['creatorId'] == user.uid,
+                  chatDocs[index]['creatorName'],
+                  chatDocs[index]['creatorImage'],
+                  key: ValueKey(chatDocs[index]
+                      .id), // Assigning a unique key to each message(not compulsory) to optimize performance
+                );
+              } catch (error) {
+                return MessageBubble(
+                  chatDocs[index]['document'],
+                  chatDocs[index]['name'],
+                  'document',
+                  chatDocs[index]['creatorId'] == user.uid,
+                  chatDocs[index]['creatorName'],
+                  chatDocs[index]['creatorImage'],
+                  key: ValueKey(chatDocs[index]
+                      .id), // Assigning a unique key to each message(not compulsory) to optimize performance
+                );
+              }
             }
           },
         );

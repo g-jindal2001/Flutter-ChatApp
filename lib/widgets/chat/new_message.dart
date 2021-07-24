@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:uuid/uuid.dart';
 
 import '../misc/attatchment_icons.dart';
 
@@ -21,7 +20,7 @@ class _NewMessageState extends State<NewMessage> {
   var _enteredMessage = '';
   final _controller = TextEditingController();
 
-  void _sendMessage(String downloadURL) async {
+  void _sendMessage(String downloadURL, String name) async {
     FocusScope.of(context).unfocus();
     final user = FirebaseAuth.instance.currentUser;
     final creatorData = await FirebaseFirestore.instance
@@ -39,6 +38,18 @@ class _NewMessageState extends State<NewMessage> {
           'creatorName': creatorData['username'],
           'creatorImage': creatorData['image_url'],
         });
+      }
+
+      if (downloadURL.contains('chat_docs')) {
+        FirebaseFirestore.instance.collection('chat').add({
+          'document': downloadURL,
+          'createdAt': Timestamp.now(),
+          'uniqueId': user.uid + widget.listenerId,
+          'creatorId': user.uid,
+          'creatorName': creatorData['username'],
+          'creatorImage': creatorData['image_url'],
+          'name': name,
+        });
       } else {
         FirebaseFirestore.instance.collection('chat').add({
           'image': downloadURL,
@@ -55,20 +66,18 @@ class _NewMessageState extends State<NewMessage> {
     _controller.clear();
   }
 
-  void getFile(File file) async {
+  void _getFile(File file, String typeOfFile, String name) async {
     if (file != null) {
-      var uuid = Uuid();
-
       final ref = FirebaseStorage.instance
           .ref()
-          .child('chat_images')
-          .child(uuid.v4() + '.jpg');
+          .child('chat_${typeOfFile}s')
+          .child(name);
 
       await ref.putFile(file);
 
       final url = await ref.getDownloadURL();
 
-      _sendMessage(url);
+      _sendMessage(url, name);
     } else {
       print("Error");
     }
@@ -87,9 +96,9 @@ class _NewMessageState extends State<NewMessage> {
               borderRadius: BorderRadius.circular(10), color: Colors.white),
           child: GridView(
             children: [
-              AttatchmentIcons('document', 'Document', getFile),
-              AttatchmentIcons('camera', 'Camera', getFile),
-              AttatchmentIcons('camera', 'Gallery', getFile),
+              AttatchmentIcons('document', 'Document', _getFile),
+              AttatchmentIcons('camera', 'Camera', _getFile),
+              AttatchmentIcons('camera', 'Gallery', _getFile),
             ],
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 140,
@@ -135,7 +144,7 @@ class _NewMessageState extends State<NewMessage> {
           IconButton(
             onPressed: _enteredMessage.trim().isEmpty
                 ? null
-                : () => _sendMessage('NoDownLoadURL'),
+                : () => _sendMessage('NoDownLoadURL', 'none'),
             icon: Icon(
               Icons.send,
             ),

@@ -36,6 +36,10 @@ dependencies:
   firebase_messaging: ^10.0.3
   file_picker: ^3.0.3
   uuid: ^3.0.4
+  open_file: ^3.2.1
+  path: ^1.8.0
+  path_provider: ^2.0.2
+  http: ^0.13.3
 
 dev_dependencies:
   flutter_test:

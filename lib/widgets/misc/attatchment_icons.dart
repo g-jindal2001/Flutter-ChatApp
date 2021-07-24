@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 class AttatchmentIcons extends StatefulWidget {
   final String name;
   final String description;
-  final Function(File file) selectedFile;
+  final Function(File file, String type, String name) selectedFile;
 
   AttatchmentIcons(this.name, this.description, this.selectedFile);
 
@@ -18,6 +19,7 @@ class AttatchmentIcons extends StatefulWidget {
 class _AttatchmentIconsState extends State<AttatchmentIcons> {
   File _finalpickedImage;
   File _finalpickedDocument;
+  String _finalFileName;
 
   void chooseImage() async {
     try {
@@ -32,13 +34,16 @@ class _AttatchmentIconsState extends State<AttatchmentIcons> {
         );
         final pickedImage = File(
             selectedImage.path); //Converting type PickedFile into type File
+        final fileName = basename(selectedImage
+            .path); //returns the image name as set by the device camera for that image
 
         setState(() {
           _finalpickedImage = pickedImage;
+          _finalFileName = fileName;
         });
-      }
 
-      widget.selectedFile(_finalpickedImage);
+        widget.selectedFile(_finalpickedImage, 'image', fileName);
+      }
     } catch (error) {
       print(error); //User cancelled the request
     }
@@ -54,11 +59,15 @@ class _AttatchmentIconsState extends State<AttatchmentIcons> {
       final pickedFile =
           File(result.files.single.path); //Converting FilePickerResult to File
 
+      final fileName = basename(result.files.single.path);
+      print(fileName);
+
       setState(() {
         _finalpickedDocument = pickedFile;
+        _finalFileName = fileName;
       });
 
-      widget.selectedFile(_finalpickedDocument);
+      widget.selectedFile(_finalpickedDocument, 'doc', fileName);
     }
   }
 
