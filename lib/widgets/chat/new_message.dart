@@ -20,7 +20,7 @@ class _NewMessageState extends State<NewMessage> {
   var _enteredMessage = '';
   final _controller = TextEditingController();
 
-  void _sendMessage(String downloadURL, String name) async {
+  void _sendMessage() async {
     FocusScope.of(context).unfocus();
     final user = FirebaseAuth.instance.currentUser;
     final creatorData = await FirebaseFirestore.instance
@@ -29,17 +29,28 @@ class _NewMessageState extends State<NewMessage> {
         .get();
 
     try {
-      if (downloadURL == 'NoDownLoadURL') {
-        FirebaseFirestore.instance.collection('chat').add({
-          'text': _enteredMessage,
-          'createdAt': Timestamp.now(),
-          'uniqueId': user.uid + widget.listenerId,
-          'creatorId': user.uid,
-          'creatorName': creatorData['username'],
-          'creatorImage': creatorData['image_url'],
-        });
-      }
+      FirebaseFirestore.instance.collection('chat').add({
+        'text': _enteredMessage,
+        'createdAt': Timestamp.now(),
+        'uniqueId': user.uid + widget.listenerId,
+        'creatorId': user.uid,
+        'creatorName': creatorData['username'],
+        'creatorImage': creatorData['image_url'],
+      });
+    } catch (error) {
+      print(error);
+    }
+    _controller.clear();
+  }
 
+  void sendFile(String downloadURL, String name) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final creatorData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    try {
       if (downloadURL.contains('chat_docs')) {
         FirebaseFirestore.instance.collection('chat').add({
           'document': downloadURL,
@@ -79,7 +90,7 @@ class _NewMessageState extends State<NewMessage> {
 
       final url = await ref.getDownloadURL();
 
-      _sendMessage(url, name);
+      sendFile(url, name);
     } else {
       print("Error");
     }
@@ -145,9 +156,7 @@ class _NewMessageState extends State<NewMessage> {
             icon: Icon(Icons.attachment),
           ),
           IconButton(
-            onPressed: _enteredMessage.trim().isEmpty
-                ? null
-                : () => _sendMessage('NoDownLoadURL', 'none'),
+            onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
             icon: Icon(
               Icons.send,
             ),
