@@ -19,7 +19,7 @@ class Messages extends StatelessWidget {
         user.uid + listenerId,
         listenerId + user.uid,
       ]) //whereIn in flutter is same as 'in' condition in Firebase
-          //.orderBy('createdAt', descending: false)
+          .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (ctx, chatSnapshot) {
         if (chatSnapshot.connectionState == ConnectionState.waiting) {

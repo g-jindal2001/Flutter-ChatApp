@@ -101,7 +101,7 @@ class _NewMessageState extends State<NewMessage> {
             children: [
               AttatchmentIcons('document', 'Document', _getFile),
               AttatchmentIcons('camera', 'Camera', _getFile),
-              AttatchmentIcons('camera', 'Gallery', _getFile),
+              AttatchmentIcons('gallery', 'Gallery', _getFile),
             ],
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 140,
